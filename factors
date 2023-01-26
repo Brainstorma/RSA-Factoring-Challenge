@@ -1,18 +1,16 @@
 #!/usr/bin/python3
+import math
 import sys
 
 def factorize(n):
-    for i in range(2, int(n ** 0.5) + 1):
+    for i in range(2, int(math.sqrt(n)) + 1):
         if n % i == 0:
-            return (i, n // i)
-    return (n, 1)
+            return [i, int(n/i)]
 
-def main(file):
-    with open(file) as f:
-        for line in f:
-            n = int(line)
-            p, q = factorize(n)
-            print(f"{n}={p}*{q}")
-
-if __name__ == "__main__":
-    main(sys.argv[1])
+for fn in sys.argv[1:]:
+    with open(fn, 'r') as f:
+        for num in f.readlines():
+            num = int(num.strip())
+            result = factorize(num)
+            if result:
+                print('{}={}*{}'.format(num, result[0], result[1]))
