@@ -1,16 +1,91 @@
 #!/usr/bin/python3
+# Python3 program to factorize a
+# given number n
 import math
-import sys
 
-def factorize(n):
-    for i in range(2, int(math.sqrt(n)) + 1):
-        if n % i == 0:
-            return [i, int(n/i)]
+def maxPrimeFactors (n):
 
-for fn in sys.argv[1:]:
-    with open(fn, 'r') as f:
-        for num in f.readlines():
-            num = int(num.strip())
-            result = factorize(num)
-            if result:
-                print('{}={}*{}'.format(num, result[0], result[1]))
+    # Initialize the maximum prime
+    # factor and its corresponding
+    # count as 1
+    maxPrime = -1
+    count = 1
+
+    # Print the number of 2s
+    # that divide n
+    while n % 2 == 0:
+        maxPrime = 2
+        n >>= 1 # equivalent to n /= 2
+        count = count + 1
+
+    # n must be odd at this point,
+    # thus skip the even numbers
+    # and iterate only for odd
+    # integers
+    for i in range(3, int(math.sqrt(n)) + 1, 2):
+        while n % i == 0:
+            maxPrime = i
+            n = n / i
+            count = count + 1
+
+    # This condition is to handle
+    # the case when n is a prime
+    # number greater than 2
+    if n > 2:
+        maxPrime = n
+        count = 1
+
+    return int(maxPrime), int(count)
+
+# Function to factorize numbers
+# in given array and store the
+# factorization in the given array
+def factorize(arr, n):
+
+    # Traverse through all
+    # elements of the array
+    for i in range(0, n):
+
+        # Check if the element is
+        # greater than 0
+        if arr[i] > 0:
+
+            # Check if the element is 1
+            # if yes put it in factorized
+            # form (1 * 1)
+            if arr[i] == 1:
+                arr[i] = str(arr[i]) + " = " + str(arr[i])  + " * " + str(arr[i])
+
+            # Otherwise, continue with
+            # finding its prime factor
+            # and its corresponding count
+            else:
+                maxPrimary, count = maxPrimeFactors(arr[i])
+
+                arr[i] = str(arr[i]) + " = "
+
+                # Print the factors of the
+                # number while iterating
+                # count many times
+                # Duplicates are allowed
+                j = 0
+                while j < count :
+                    arr[i] += str(int(maxPrimary)) + " * "
+                    j += 1
+
+                # Remove the extra "* " (dot, star and space)
+                arr[i] = arr[i][: -3]
+
+# Driver Code
+if __name__ == '__main__':
+
+    # Given array elements
+    n = int(input())
+    arr = list(map(int, input().split()))
+
+    # Printing the given array
+    factorize(arr, n)
+
+    # Printing the Factorized array
+    for i in range(0, n):
+        print (arr[i])
