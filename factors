@@ -1,91 +1,54 @@
 #!/usr/bin/python3
-# Python3 program to factorize a
-# given number n
-import math
+import sys
+import threading
 
-def maxPrimeFactors (n):
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return abs(a)
 
-    # Initialize the maximum prime
-    # factor and its corresponding
-    # count as 1
-    maxPrime = -1
-    count = 1
+def pollard_rho(n):
+    x = 2
+    y = 2
+    d = 1
+    c = 1
+    while d == 1:
+        x = (x * x + c) % n
+        y = (y * y + c) % n
+        y = (y * y + c) % n
+        d = gcd(x - y, n)
+        if d == n:
+            return None
+    if d == n:
+        return None
+    return d
 
-    # Print the number of 2s
-    # that divide n
-    while n % 2 == 0:
-        maxPrime = 2
-        n >>= 1 # equivalent to n /= 2
-        count = count + 1
+def factorize(n):
+    if n % 2 == 0:
+        return (2, n // 2)
+    factor = pollard_rho(n)
+    if factor == None:
+        return (n, 1)
+    return (factor, n // factor)
 
-    # n must be odd at this point,
-    # thus skip the even numbers
-    # and iterate only for odd
-    # integers
-    for i in range(3, int(math.sqrt(n)) + 1, 2):
-        while n % i == 0:
-            maxPrime = i
-            n = n / i
-            count = count + 1
+def main(file):
+    with open(file) as f:
+        threads = []
+        for line in f:
+            n = int(line)
+            t = threading.Thread(target=factorize_and_print, args=(n,))
+            threads.append(t)
+            t.start()
+        for t in threads:
+            t.join()
 
-    # This condition is to handle
-    # the case when n is a prime
-    # number greater than 2
-    if n > 2:
-        maxPrime = n
-        count = 1
+def factorize_and_print(n):
+    p, q = factorize(n)
+    print(f"{n}={p}*{q}")
 
-    return int(maxPrime), int(count)
-
-# Function to factorize numbers
-# in given array and store the
-# factorization in the given array
-def factorize(arr, n):
-
-    # Traverse through all
-    # elements of the array
-    for i in range(0, n):
-
-        # Check if the element is
-        # greater than 0
-        if arr[i] > 0:
-
-            # Check if the element is 1
-            # if yes put it in factorized
-            # form (1 * 1)
-            if arr[i] == 1:
-                arr[i] = str(arr[i]) + " = " + str(arr[i])  + " * " + str(arr[i])
-
-            # Otherwise, continue with
-            # finding its prime factor
-            # and its corresponding count
-            else:
-                maxPrimary, count = maxPrimeFactors(arr[i])
-
-                arr[i] = str(arr[i]) + " = "
-
-                # Print the factors of the
-                # number while iterating
-                # count many times
-                # Duplicates are allowed
-                j = 0
-                while j < count :
-                    arr[i] += str(int(maxPrimary)) + " * "
-                    j += 1
-
-                # Remove the extra "* " (dot, star and space)
-                arr[i] = arr[i][: -3]
-
-# Driver Code
 if __name__ == '__main__':
-
-    # Given array elements
-    n = int(input())
-    arr = list(map(int, input().split()))
-
-    # Printing the given array
-    factorize(arr, n)
-
-    # Printing the Factorized array
-    for i in range(0, n):
-        print (arr[i])
+    if len(sys.argv) != 2:
+        print("Usage: factors <file>")
+        sys.exit(1)
+    file = sys.argv[1]
+    main(file)
