@@ -1,54 +1,19 @@
 #!/usr/bin/python3
 import sys
-import threading
 
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return abs(a)
+if len(sys.argv) != 2:
+    print("Bad Usage\n/.factors filename")
+else:
 
-def pollard_rho(n):
-    x = 2
-    y = 2
-    d = 1
-    c = 1
-    while d == 1:
-        x = (x * x + c) % n
-        y = (y * y + c) % n
-        y = (y * y + c) % n
-        d = gcd(x - y, n)
-        if d == n:
-            return None
-    if d == n:
-        return None
-    return d
+    file_name = sys.argv[1]
+    file_of_number = open(file_name)
+    number = file_of_number.readline()
 
-def factorize(n):
-    if n % 2 == 0:
-        return (2, n // 2)
-    factor = pollard_rho(n)
-    if factor == None:
-        return (n, 1)
-    return (factor, n // factor)
-
-def main(file):
-    with open(file) as f:
-        threads = []
-        for line in f:
-            n = int(line)
-            t = threading.Thread(target=factorize_and_print, args=(n,))
-            threads.append(t)
-            t.start()
-        for t in threads:
-            t.join()
-
-def factorize_and_print(n):
-    p, q = factorize(n)
-    print(f"{n}={p}*{q}")
-
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: factors <file>")
-        sys.exit(1)
-    file = sys.argv[1]
-    main(file)
+    while number != "\n" and number != "":
+        number = int(number)
+        divisor = 2
+        while number % divisor != 0:
+            divisor += 1
+        d_r = int(number / divisor)
+        print(f"{number}={d_r}*{divisor}")
+        number = file_of_number.readline()
