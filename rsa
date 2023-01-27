@@ -1,20 +1,15 @@
 #!/usr/bin/python3
 import sys
-from prime import factor, primef, gen_primes
-lp = []
+from prime import factor
+
 with open("prime.txt", 'r') as file:
-        for line in file:
-            lp=line[:-1].split(",")
-            break
-lp = list(map(int, lp))
+    lp = set(map(int, file.readline().strip().split(",")))
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         exit(1)
-    lpi = []
     with open(sys.argv[1], 'r') as file:
-        lines = file.readlines()
-        for line in lines:
-            lpi.append(int(line))
+        lpi = list(map(int, file.readlines()))
     for i in lpi:
         j = factor(i, lp)
-    print("{}={}*{}".format(i,i//j,j))
+        print(f"{i}={i//j}*{j}")
